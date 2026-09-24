@@ -76,16 +76,12 @@ scanner:
 	return r.s.Err()
 }
 
-const adderMsg = `
-You have added %d new entries. Do you want to;
-		1. Add more
-		2. Save`
-
 func (r *REPL) add() {
 	buffer := make([]expense.Expense, 0, 5)
 
 	buffer = append(buffer, newExpense(r.s))
-	fmt.Printf("%s\n", adderMsg)
+	fmt.Printf("You have added %d new entries. Do you want to;\n", len(buffer))
+	fmt.Printf("1. Add more\n2. Save\n")
 
 	for r.s.Scan() {
 		option, err := strconv.Atoi(r.s.Text())
@@ -96,7 +92,8 @@ func (r *REPL) add() {
 		switch option {
 		case 1:
 			buffer = append(buffer, newExpense(r.s))
-			fmt.Printf("%s\n", adderMsg)
+			fmt.Printf("You have added %d new entries. Do you want to;\n", len(buffer))
+			fmt.Printf("1. Add more\n2. Save\n")
 		case 2:
 			r.t.AddAll(buffer)
 			err := r.t.Save()

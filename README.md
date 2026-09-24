@@ -32,7 +32,19 @@ GOEXTRACK allows users to record, view, and manage expenses directly from the te
 
 ## Installation
 
-Clone the repository:
+Install
+
+```bash
+go install github.com/JamiuJimoh/Goextrack/cmd/repl@latest
+```
+and run
+```bash
+repl
+```
+
+Or
+
+Clone the repository
 
 ```bash
 git clone https://github.com/JamiuJimoh/goextrack.git
