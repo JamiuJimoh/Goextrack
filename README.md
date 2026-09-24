@@ -146,7 +146,3 @@ Run the test suite:
 ```bash
 go test ./...
 ```
-
-## License
-
-This project is licensed under the MIT License.
