@@ -61,7 +61,7 @@ cd goextrack
 Run the repl application directly with:
 
 ```bash
-go run ./cmd/repl/main.go
+go run ./cmd/goextrack-repl/main.go
 ```
 or
 
@@ -72,7 +72,7 @@ make repl-run
 Alternatively, build an executable:
 
 ```bash
-go build -o goextrack ./cmd/repl/main.go 
+go build -o goextrack ./cmd/goextrack-repl/main.go 
 ```
 or
 

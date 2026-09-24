@@ -18,7 +18,7 @@ build: clean
 	go build
 
 repl-build: clean 
-	go build -o goextrack ./cmd/repl/main.go 
+	go build -o goextrack ./cmd/goextrack-repl/main.go 
 
 repl-run: clean
-	go run ./cmd/repl/main.go
+	go run ./cmd/goextrack-repl/main.go

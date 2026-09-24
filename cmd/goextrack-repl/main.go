@@ -2,13 +2,19 @@ package main
 
 import (
 	"log"
+	"os"
+	"path/filepath"
 
-	"github.com/JamiuJimoh/Goextrack"
-	"github.com/JamiuJimoh/Goextrack/internal"
+	repl "github.com/JamiuJimoh/Goextrack"
+	expense "github.com/JamiuJimoh/Goextrack/internal"
 )
 
 func main() {
-	handler := expense.NewJSONSourceHandler("data/expense.json")
+	dataPath, err := expenseFilePath()
+	if err != nil {
+		log.Fatal(err)
+	}
+	handler := expense.NewJSONSourceHandler(dataPath)
 	tracker, err := expense.NewTracker(handler)
 	if err != nil {
 		log.Fatal(err)
@@ -16,4 +22,18 @@ func main() {
 
 	app := repl.New(tracker)
 	log.Fatal(app.Run())
+}
+
+func expenseFilePath() (string, error) {
+	baseDir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(
+		baseDir,
+		"goextrack",
+		"data",
+		"expense.json",
+	), nil
 }
