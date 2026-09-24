@@ -47,13 +47,13 @@ Or
 Clone the repository
 
 ```bash
-git clone https://github.com/JamiuJimoh/goextrack.git
+git clone https://github.com/JamiuJimoh/Goextrack.git
 ```
 
 Navigate into the project directory:
 
 ```bash
-cd goextrack
+cd Goextrack
 ```
 
 ## Running the Application
