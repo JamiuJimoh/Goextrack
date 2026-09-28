@@ -55,6 +55,9 @@ func (t *Tracker) Get(id uuid.UUID) (Expense, error) {
 }
 
 func (t *Tracker) Edit(e Expense) error {
+	if err := Validate(e); err != nil {
+		return err
+	}
 	for i, expense := range t.expenses {
 		if e.ID == expense.ID {
 			e.UpdatedAt = time.Now()
