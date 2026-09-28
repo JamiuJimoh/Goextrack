@@ -15,6 +15,7 @@ func main() {
 		log.Fatal(err)
 	}
 	handler := expense.NewJSONSourceHandler(dataPath)
+	// handler := expense.NewJSONSourceHandler("data/expense.json")
 	tracker, err := expense.NewTracker(handler)
 	if err != nil {
 		log.Fatal(err)

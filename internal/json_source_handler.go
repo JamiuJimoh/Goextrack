@@ -45,7 +45,7 @@ func (sh JSONSourceHandler) Save(e []Expense) (err error) {
 	if err != nil {
 		return err
 	}
-	if os.MkdirAll(filepath.Dir(sh.dataPath), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(sh.dataPath), 0o755); err != nil {
 		return err
 	}
 

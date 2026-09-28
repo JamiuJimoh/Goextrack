@@ -20,7 +20,7 @@ func (f *fakeExpenseSource) Save([]Expense) error {
 	return nil
 }
 
-func newTestExpense(id uuid.UUID, amount float64) Expense {
+func newTestExpense(id uuid.UUID, amount Money) Expense {
 	now := time.Now()
 
 	return Expense{
@@ -72,7 +72,10 @@ func TestTracker_Add(t *testing.T) {
 
 	expense := newTestExpense(uuid.New(), 2500)
 
-	tracker.Add(expense)
+	err = tracker.Add(expense)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	got := tracker.List()
 
@@ -133,7 +136,7 @@ func TestTracker_Get_Found(t *testing.T) {
 	}
 
 	if got.Amount != expected.Amount {
-		t.Errorf("expected amount %.2f, got %.2f", expected.Amount, got.Amount)
+		t.Errorf("expected amount %.2f, got %.2f", expected.AmountToNaira(), got.AmountToNaira())
 	}
 }
 
@@ -184,8 +187,8 @@ func TestTracker_Edit_Success(t *testing.T) {
 	if got.Amount != updated.Amount {
 		t.Errorf(
 			"expected amount %.2f, got %.2f",
-			updated.Amount,
-			got.Amount,
+			updated.AmountToNaira(),
+			got.AmountToNaira(),
 		)
 	}
 }
@@ -284,7 +287,7 @@ func TestTracker_Summarize(t *testing.T) {
 	}
 
 	if summary.Total != 6000 {
-		t.Errorf("expected total 6000, got %.2f", summary.Total)
+		t.Errorf("expected total 6000, got %.2f", summary.TotalToNaira())
 	}
 
 	if summary.Average != 2000.0 {

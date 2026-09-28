@@ -77,10 +77,15 @@ scanner:
 }
 
 func (r *REPL) add() {
-	buffer := make([]expense.Expense, 0, 5)
+	var count int
+	err := r.t.Add(newExpense(r.s))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	count++
 
-	buffer = append(buffer, newExpense(r.s))
-	fmt.Printf("You have added %d new entries. Do you want to;\n", len(buffer))
+	fmt.Printf("You have added %d new entries. Do you want to;\n", count)
 	fmt.Printf("1. Add more\n2. Save\n")
 
 	for r.s.Scan() {
@@ -91,16 +96,20 @@ func (r *REPL) add() {
 		}
 		switch option {
 		case 1:
-			buffer = append(buffer, newExpense(r.s))
-			fmt.Printf("You have added %d new entries. Do you want to;\n", len(buffer))
+			err = r.t.Add(newExpense(r.s))
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			count++
+			fmt.Printf("You have added %d new entries. Do you want to;\n", count)
 			fmt.Printf("1. Add more\n2. Save\n")
 		case 2:
-			r.t.AddAll(buffer)
-			err := r.t.Save()
+			err = r.t.Save()
 			if err != nil {
 				fmt.Println("Internal error occured while saving data")
 			}
-			fmt.Printf("You saved %d item(s)\n", len(buffer))
+			fmt.Printf("You saved %d item(s)\n", count)
 			return
 		default:
 			continue
@@ -132,7 +141,7 @@ func (r *REPL) list() {
 			"%s\t%s\t₦%.2f\t%s\t%v\n",
 			expense.ID,
 			expense.Category,
-			expense.Amount,
+			expense.AmountToNaira(),
 			expense.Description,
 			expense.CreatedAt.Format("2006-01-02"),
 		)
@@ -142,7 +151,7 @@ func (r *REPL) list() {
 
 	summary := r.t.Summarize()
 	fmt.Printf("\nExpenses Count: %d\n", summary.Count)
-	fmt.Printf("Total Expenses: ₦%.2f\n", float64(summary.Total))
+	fmt.Printf("Total Expenses: ₦%.2f\n", summary.TotalToNaira())
 	fmt.Printf("Expenses Average: %.2f\n", summary.Average)
 }
 
@@ -179,7 +188,7 @@ func (r *REPL) view() {
 			"%s\t%s\t₦%.2f\t%s\t%v\t%v\n",
 			e.ID,
 			e.Category,
-			e.Amount,
+			e.AmountToNaira(),
 			e.Description,
 			e.CreatedAt.Format(timeFormat),
 			e.UpdatedAt.Format(timeFormat),
@@ -197,24 +206,19 @@ func (r *REPL) delete() {
 		if err != nil {
 			fmt.Println("Invalid id")
 			fmt.Print("Enter the expense id: ")
-			continue
+			return
 		}
 		err = r.t.Delete(id)
 		if err != nil {
 			if errors.Is(err, expense.ErrExpenseNotFound) {
 				fmt.Println(expense.ErrExpenseNotFound)
 				fmt.Print("Enter the expense id: ")
-				continue
+				return
 			}
 			fmt.Println("Internal error")
 			return
 		}
 
-		err = r.t.Save()
-		if err != nil {
-			fmt.Println("Internal error")
-			continue
-		}
 		fmt.Println("Deleted one entry")
 		return
 	}
@@ -240,16 +244,16 @@ Select an option: `
 	fmt.Print(menu)
 }
 
-func amountCollector(scanner *bufio.Scanner) float64 {
-	fmt.Print("Enter amount: ")
+func amountCollector(scanner *bufio.Scanner) expense.Money {
+	fmt.Print("Enter amount (in kobo): ")
 	for scanner.Scan() {
-		amount, err := strconv.ParseFloat(scanner.Text(), 64)
+		amount, err := strconv.Atoi(scanner.Text())
 		if err != nil || amount <= 0 {
 			fmt.Println("Invalid amount. Please enter a valid amount")
 			fmt.Print("\nEnter amount: ")
 			continue
 		}
-		return amount
+		return expense.Money(amount)
 	}
 	return 0
 }
